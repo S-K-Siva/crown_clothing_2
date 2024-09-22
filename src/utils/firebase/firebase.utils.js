@@ -7,7 +7,7 @@ import {GoogleAuthProvider, signInWithPopup, getAuth, signInWithEmailAndPassword
     onAuthStateChanged,
     signOut
 } from "firebase/auth";
-import {doc, getDoc, setDoc, getFirestore} from "firebase/firestore";
+import {query, getDocs, collection, writeBatch, doc, getDoc, setDoc, getFirestore} from "firebase/firestore";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
@@ -77,3 +77,35 @@ export const onAuthStateChangedListener = (callback) => onAuthStateChanged(auth,
 
 
 export const signOutUser = () => signOut(auth);
+
+
+// adding the data into firestore database
+
+export const addColletionsAndDocuments = async (collectionKey, objectsToAdd) => {
+    const collectionRef = collection(db,collectionKey);
+
+    const batch = writeBatch(db);
+
+    objectsToAdd.forEach((element)=>{
+        const docRef = doc(collectionRef,element.title.toLowerCase());
+        batch.set(docRef, element);
+    });
+
+    await batch.commit();
+    console.log("done");
+}
+
+
+export const getCategoriesAndDocuments = async() => {
+    const collectionRef = collection(db, "categories");
+    const q = query(collectionRef);
+
+    const querySnapshot = await getDocs(q);
+
+    const result = querySnapshot.docs.reduce((acc,element)=>{
+        const {title, items} = element.data();
+        acc[title] = items;
+        return acc;
+    },{});
+    return result;
+}

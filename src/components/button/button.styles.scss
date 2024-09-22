@@ -4,8 +4,8 @@
   height: 50px;
   letter-spacing: 0.5px;
   line-height: 50px;
-  padding: 0 35px 0 35px;
-  font-size: 15px;
+  padding: 0 30px; /* Reduced padding */
+  font-size: 14px; /* Reduced font size */
   background-color: black;
   color: white;
   text-transform: uppercase;
@@ -15,7 +15,13 @@
   cursor: pointer;
   display: flex;
   justify-content: center;
-  margin : 0.8rem;
+  align-items: center; /* Center text vertically */
+  margin: 0.8rem;
+  white-space: nowrap; /* Prevent text wrapping */
+  text-overflow: ellipsis; /* Truncate text if it overflows */
+  overflow: hidden; /* Hide overflow text */
+  max-width: 250px; /* Set max-width to avoid overflow */
+  flex-shrink: 0; /* Prevent text from shrinking */
 
   &:hover {
     background-color: white;
