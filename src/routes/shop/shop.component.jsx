@@ -2,9 +2,12 @@ import { Route, Routes } from "react-router-dom";
 import { CategoryPreview } from "../category-preview/category-preview.component.jsx"
 import { Category } from "../../components/category/category.component.jsx";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getCategoriesAndDocuments } from "../../utils/firebase/firebase.utils.js";
 import { setProducts } from "../../store/product/product.action.js";
+import { getCartItems } from "../../store/cart/cart.selector.js";
+import { setCartCount } from "../../store/cart/cart.actions.js";
+
 export const Shop = () => {
     const dispatch = useDispatch();
     useEffect(()=>{
@@ -14,7 +17,17 @@ export const Shop = () => {
         };
         getData();
     },[dispatch]);
+    const cartItems = useSelector(getCartItems);
     
+    useEffect(() => {
+        const newCartCount = cartItems.reduce((total, cartItem)=>{
+            return total + cartItem.quantity
+        },0);
+
+        dispatch(setCartCount(newCartCount));
+
+    },[cartItems]);
+
     return <Routes>
         <Route index element={<CategoryPreview />}/>
         <Route path=":category" element={<Category />}/>
