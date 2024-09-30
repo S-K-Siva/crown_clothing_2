@@ -2,7 +2,9 @@ import "./signUp.styles.scss";
 import FormInput from "../formInput/formInput.component";
 import Button from "../button/button.component";
 import { createAuthWithEmailAndPassword, createUserDocumentation } from "../../utils/firebase/firebase.utils";
+import { emailAndPasswordRegisterStart } from "../../store/user/user.action";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 const defaultValues = {
         displayName : '',
         password : '',
@@ -12,7 +14,7 @@ const defaultValues = {
 const SignUpComponent = () => {
     const [formInputs, setFormInputs] = useState(defaultValues);
     const {displayName, password, confirmPassword, email} = formInputs;
-
+    const dispatch = useDispatch();
     const handleChange = (event) => {
         const {name , value} = event.target;
         setFormInputs({...formInputs, [name] : value});
@@ -26,9 +28,14 @@ const SignUpComponent = () => {
             alert("Password is mismatched!");
         }
         else{
+            // without redux-saga
             const res = await createAuthWithEmailAndPassword(email,password);
             const {user} = res;
             await createUserDocumentation(user,{displayName : displayName});
+
+            // with redux-saga
+            // const data = formInputs;
+            // dispatch(emailAndPasswordRegisterStart(data));
         }
         
         setFormInputs(defaultValues);

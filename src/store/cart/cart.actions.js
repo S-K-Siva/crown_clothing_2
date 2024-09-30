@@ -1,6 +1,6 @@
 import { ACTIONS } from "./cart.types";
 
-
+import { setCartItems } from "./cart.reducer";
 export const setCartOpen = (value) => ({type : ACTIONS.SET_CART_IS_OPEN, payload : value});
 export const addItemToCart = (product,cartItems) => {
     
@@ -38,4 +38,4 @@ export const removeCartItem = (item,cartItems) => setCartItems(removeItem(item, 
 export const setIsCartOpen = (value) => ({type : 'SET_CART_IS_OPEN',payload : value});
 export const setCartTotal = (cartTotal) => ({type : 'SET_CART_TOTAL',payload : cartTotal});
 export const setCartCount = (cartCount) => ({type : 'SET_CART_COUNT',payload : cartCount});
-export const setCartItems = (items) => ({type : ACTIONS.SET_CART_ITEMS, payload : items});
+// export const setCartItems = (items) => ({type : ACTIONS.SET_CART_ITEMS, payload : items}); // for redux library

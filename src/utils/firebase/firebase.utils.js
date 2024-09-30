@@ -1,25 +1,27 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-// import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+
 import {GoogleAuthProvider, signInWithPopup, getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
     onAuthStateChanged,
     signOut
 } from "firebase/auth";
 import {query, getDocs, collection, writeBatch, doc, getDoc, setDoc, getFirestore} from "firebase/firestore";
+
+// import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyAt2hVUt07cnPxwB2tFaK0vl7pezAC2wtE",
-  authDomain: "crown-clothing-final-b3411.firebaseapp.com",
-  projectId: "crown-clothing-final-b3411",
-  storageBucket: "crown-clothing-final-b3411.appspot.com",
-  messagingSenderId: "1009072945791",
-  appId: "1:1009072945791:web:5bb15085abf0bedd2b5d4a",
-  measurementId: "G-5MVTJPR1Y9"
-};
 
+const firebaseConfig = {
+  apiKey: process.env.REACT_APP_FB_API_KEY,
+  authDomain: process.env.REACT_APP_FB_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_STORAGEBUCKET,
+  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_APP_ID,
+  measurementId: process.env.REACT_APP_MEASUREMENT_ID,
+};
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 // const analytics = getAnalytics(app);
@@ -44,14 +46,15 @@ export const createUserDocumentation = async (userAuth, data ={}) => {
 
     if(userSnapShot.exists()) return userDocRef;
     
-    const {email, displayName} = userAuth;
+    let {email, displayName} = userAuth;
     
-
+    
+    
     const createdAt = new Date();
     try{
         await setDoc(userDocRef,{
             email, 
-            displayName,
+            displayName : data.displayName || displayName,
             createdAt,
             ...data
         });
@@ -63,10 +66,19 @@ export const createUserDocumentation = async (userAuth, data ={}) => {
     return userDocRef;
 }
 
-export const createAuthWithEmailAndPassword = async (email,password) => {
-    if(!email || !password) return;
-    return await createUserWithEmailAndPassword(auth,email,password);
-}
+export const createAuthWithEmailAndPassword = async (email, password) => {
+    if (!email || !password) return;
+    
+    try {
+        console.log(auth);
+        const res = await createUserWithEmailAndPassword(auth, email, password);
+        console.log('Response from createUserWithEmailAndPassword:', res); // Add this log
+        return res; // This should include a 'user' object
+    } catch (error) {
+        console.error('Error creating user with email and password:', error); // Log any errors
+        throw error; // Re-throw the error to be caught by the saga
+    }
+};
 
 export const signInAuthWithEmailAndPassword = async (email,password) => {
     if(!email || !password) return;
@@ -76,7 +88,7 @@ export const signInAuthWithEmailAndPassword = async (email,password) => {
 export const onAuthStateChangedListener = (callback) => onAuthStateChanged(auth,callback);
 
 
-export const signOutUser = () => signOut(auth);
+export const signOutUser = async () => await signOut(auth);
 
 
 // adding the data into firestore database
@@ -107,5 +119,17 @@ export const getCategoriesAndDocuments = async() => {
         acc[title] = items;
         return acc;
     },{});
+    console.log(result);
     return result;
+}
+
+export const getCurrentUserFromFB = () => {
+    console.log("Triggered");
+    return new Promise((resolve,reject)=>{
+        const unsubscribe = onAuthStateChanged(auth,(userAuth)=>{
+            unsubscribe(); // whether we get the user or not, just sign out
+            resolve(userAuth); // sign in whether the user or null.
+        },reject);
+        
+    });
 }

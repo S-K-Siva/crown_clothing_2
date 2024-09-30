@@ -11,6 +11,7 @@ import { CartProvider } from './contexts/cart/cart.context';
 import { store, persistor } from './store/store';
 import { PersistGate } from 'redux-persist/integration/react';
 import LoadingSpinner from './components/loadingComponent/loadingComponent.component';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 const Index = () => {

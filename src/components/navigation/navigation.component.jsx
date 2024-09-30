@@ -11,12 +11,14 @@ import { CartDropDown } from "../cart-dropdown/cart-dropdown.component.jsx";
 import { getCartOpen } from "../../store/cart/cart.selector.js";
 import { getCurrentUser } from "../../store/user/user.selector.js";
 import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { logoutUserStart } from "../../store/user/user.action.js";
 const NavigationComponent = () => {
     const currentUser = useSelector(getCurrentUser);
     // const {currentUser } = useContext(UserContext);
     // const {isCartOpen, setIsCartOpen} = useContext(CartContext);
     const isCartOpen = useSelector(getCartOpen);
-   
+    const dispatch = useDispatch();
     return <Fragment>
         <div className="navigation">
             <Link className="logo-container" to='/'>
@@ -32,9 +34,15 @@ const NavigationComponent = () => {
                 <Link className="nav-link" to="/auth">
                     SIGN IN
                 </Link> :
-                <span className="nav-link" to="/auth" onClick={()=> signOutUser()}>
+                // Normal signout operation without redux-saga
+                <span className="nav-link" to="/auth" onClick={()=> signOutUser()} >
                     SIGN OUT
                 </span>
+
+                // with redux-saga
+                // <span className="nav-link" to="/auth" onClick={()=> dispatch(logoutUserStart())}>
+                //     SIGN OUT
+                // </span>
             }
             <CartIcon/>
         </div>

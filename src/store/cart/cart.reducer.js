@@ -1,4 +1,6 @@
+
 import { ACTIONS } from "./cart.types";
+import { createSlice } from "@reduxjs/toolkit";
 const INITIAL_VALUE = {
     isCartOpen : false, 
     cartItems : [], 
@@ -7,8 +9,31 @@ const INITIAL_VALUE = {
 };
 
 
+const CartSlice = createSlice({
+    name : 'cart',
+    initialState : INITIAL_VALUE,
+    reducers : {
+        setIsCartOpen(state,action){
+            state.isCartOpen = action.payload;
+        },
+        setCartItems(state,action){
+            state.cartItems = action.payload;
+        },
+        setCartCount(state,action){
+            state.cartCount = action.payload;
+        },
+        setCartTotal(state,action){
+            state.cartTotal = action.payload;
+        }
+    }
+});
 
-export const CartReducer = (state = INITIAL_VALUE, action) => {
+export const {setIsCartOpen, setCartItems, setCartCount, setCartTotal} = CartSlice.actions;
+
+export const CartReducer = CartSlice.reducer;
+
+
+export const CartReducerOld = (state = INITIAL_VALUE, action) => {
     const {type, payload} = action;
 
     switch(type){
